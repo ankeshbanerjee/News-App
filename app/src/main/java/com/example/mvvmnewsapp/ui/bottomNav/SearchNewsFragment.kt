@@ -1,4 +1,4 @@
-package com.example.mvvmnewsapp.fragments
+package com.example.mvvmnewsapp.ui.bottomNav
 
 import android.os.Bundle
 import android.util.Log
@@ -13,15 +13,11 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mvvmnewsapp.MainActivity
-import com.example.mvvmnewsapp.NewsViewModel
 import com.example.mvvmnewsapp.R
 import com.example.mvvmnewsapp.adapters.NewsAdapter
-import com.example.mvvmnewsapp.utils.Constants
 import com.example.mvvmnewsapp.utils.Constants.Companion.SEARCH_NEWS_TIME_DELAY
 import com.example.mvvmnewsapp.utils.Resource
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -43,7 +39,7 @@ class SearchNewsFragment : Fragment(R.layout.fragment_search_news){
         editText = view.findViewById(R.id.etSearch)
         setupRecyclerView()
         newsAdapter.setOnItemClickListener { article ->
-            val action = SearchNewsFragmentDirections.actionSearchNewsFragmentToArticleFragment(article)
+            val action = SearchNewsFragmentDirections.actionSearchNewsFragmentToArticleActivity(article)
             view.findNavController().navigate(action)
         }
 

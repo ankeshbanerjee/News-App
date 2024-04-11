@@ -1,11 +1,11 @@
-package com.example.mvvmnewsapp
+package com.example.mvvmnewsapp.ui.viewArticle
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.mvvmnewsapp.repository.NewsRepository
 
-class NewsViewModelFactory(val newsRepository: NewsRepository) : ViewModelProvider.Factory{
+class ArticleActivityViewModelFactory(val newsRepository: NewsRepository): ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return NewsViewModel(newsRepository) as T
+        return ArticleActivityViewModel(newsRepository) as T
     }
 }

@@ -1,21 +1,17 @@
-package com.example.mvvmnewsapp.fragments
+package com.example.mvvmnewsapp.ui.bottomNav
 
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mvvmnewsapp.MainActivity
-import com.example.mvvmnewsapp.NewsViewModel
 import com.example.mvvmnewsapp.R
 import com.example.mvvmnewsapp.adapters.NewsAdapter
-import com.example.mvvmnewsapp.models.NewsResponse
 import com.example.mvvmnewsapp.utils.Resource
 
 class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news){
@@ -34,8 +30,14 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news){
         recyclerView = view.findViewById(R.id.rvBreakingNews)
         setupRecyclerView()
         newsAdapter.setOnItemClickListener { article ->
-            val action = BreakingNewsFragmentDirections.actionBreakingNewsFragmentToArticleFragment(article)
-            view.findNavController().navigate(action)
+//            val action = BreakingNewsFragmentDirections.actionBreakingNewsFragmentToArticleFragment(article)
+//            view.findNavController().navigate(action)
+            try {
+                val action = BreakingNewsFragmentDirections.actionBreakingNewsFragmentToArticleActivity(article)
+                view.findNavController().navigate(action)
+            }catch (e: Exception){
+                Log.e("Wv", e.message.toString())
+            }
         }
 
         viewModel.breakingNewsLiveData.observe(viewLifecycleOwner, Observer { response ->

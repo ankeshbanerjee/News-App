@@ -1,7 +1,5 @@
-package com.example.mvvmnewsapp
+package com.example.mvvmnewsapp.ui.bottomNav
 
-import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,7 +8,6 @@ import com.example.mvvmnewsapp.models.NewsResponse
 import com.example.mvvmnewsapp.repository.NewsRepository
 import com.example.mvvmnewsapp.utils.Resource
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
 import retrofit2.Response
 import java.lang.Exception
 
