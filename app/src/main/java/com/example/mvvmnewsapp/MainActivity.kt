@@ -7,6 +7,8 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.mvvmnewsapp.db.ArticleDatabase
 import com.example.mvvmnewsapp.repository.NewsRepository
+import com.example.mvvmnewsapp.ui.bottomNav.NewsViewModel
+import com.example.mvvmnewsapp.ui.bottomNav.NewsViewModelFactory
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {

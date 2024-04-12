@@ -1,39 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/breakingNewsFragment">
 
     <fragment
         android:id="@+id/breakingNewsFragment"
-        android:name="com.example.mvvmnewsapp.fragments.BreakingNewsFragment"
-        android:label="BreakingNewsFragment" >
+        android:name="com.example.mvvmnewsapp.ui.bottomNav.BreakingNewsFragment"
+        android:label="BreakingNewsFragment"
+        tools:layout="@layout/fragment_breaking_news">
         <action
-            android:id="@+id/action_breakingNewsFragment_to_articleFragment"
-            app:destination="@id/articleFragment" />
+            android:id="@+id/action_breakingNewsFragment_to_articleActivity"
+            app:destination="@id/articleActivity" />
     </fragment>
     <fragment
         android:id="@+id/savedNewsFragment"
-        android:name="com.example.mvvmnewsapp.fragments.SavedNewsFragment"
-        android:label="SavedNewsFragment" >
+        android:name="com.example.mvvmnewsapp.ui.bottomNav.SavedNewsFragment"
+        android:label="SavedNewsFragment"
+        tools:layout="@layout/fragment_saved_news">
         <action
-            android:id="@+id/action_savedNewsFragment_to_articleFragment"
-            app:destination="@id/articleFragment" />
+            android:id="@+id/action_savedNewsFragment_to_articleActivity"
+            app:destination="@id/articleActivity" />
     </fragment>
     <fragment
         android:id="@+id/searchNewsFragment"
-        android:name="com.example.mvvmnewsapp.fragments.SearchNewsFragment"
-        android:label="SearchNewsFragment" >
+        android:name="com.example.mvvmnewsapp.ui.bottomNav.SearchNewsFragment"
+        android:label="SearchNewsFragment"
+        tools:layout="@layout/fragment_search_news">
         <action
-            android:id="@+id/action_searchNewsFragment_to_articleFragment"
-            app:destination="@id/articleFragment" />
+            android:id="@+id/action_searchNewsFragment_to_articleActivity"
+            app:destination="@id/articleActivity" />
     </fragment>
-    <fragment
-        android:id="@+id/articleFragment"
-        android:name="com.example.mvvmnewsapp.fragments.ArticleFragment"
-        android:label="ArticleFragment" >
+    <activity
+        android:id="@+id/articleActivity"
+        android:name="com.example.mvvmnewsapp.ui.viewArticle.ArticleActivity"
+        android:label="activity_article"
+        tools:layout="@layout/activity_article" >
         <argument
             android:name="article"
             app:argType="com.example.mvvmnewsapp.models.Article" />
-    </fragment>
+    </activity>
 </navigation>

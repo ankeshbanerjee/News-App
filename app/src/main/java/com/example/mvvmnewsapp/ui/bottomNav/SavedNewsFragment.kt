@@ -1,4 +1,4 @@
-package com.example.mvvmnewsapp.fragments
+package com.example.mvvmnewsapp.ui.bottomNav
 
 import android.os.Bundle
 import android.view.View
@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mvvmnewsapp.MainActivity
-import com.example.mvvmnewsapp.NewsViewModel
 import com.example.mvvmnewsapp.R
 import com.example.mvvmnewsapp.adapters.NewsAdapter
 import com.google.android.material.snackbar.Snackbar
@@ -24,7 +23,7 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news){
         recyclerView = view.findViewById(R.id.rvSavedNews)
         setupRecyclerView()
         newsAdapter.setOnItemClickListener { article ->
-            val action = SavedNewsFragmentDirections.actionSavedNewsFragmentToArticleFragment(article)
+            val action = SavedNewsFragmentDirections.actionSavedNewsFragmentToArticleActivity(article)
             view.findNavController().navigate(action)
         }
         viewModel.getSavedNews().observe(viewLifecycleOwner, Observer {
@@ -43,7 +42,7 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news){
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val articleToDelete = newsAdapter.differ.currentList[viewHolder.adapterPosition]
                 viewModel.deleteNews(articleToDelete)
-                Snackbar.make(requireContext(), view, "Article Delete", Snackbar.LENGTH_LONG).apply {
+                Snackbar.make(requireContext(), view, "Article Deleted", Snackbar.LENGTH_LONG).apply {
                     setAction("Undo"){
                         viewModel.upsert(articleToDelete)
                     }
