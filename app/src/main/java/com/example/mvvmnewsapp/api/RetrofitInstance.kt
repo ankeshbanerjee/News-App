@@ -16,7 +16,7 @@ class RetrofitInstance {
                 .addInterceptor(logging)
                 .build()
             Retrofit.Builder()
-                .baseUrl("https://newsapi.org/")
+                .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
                 .build();

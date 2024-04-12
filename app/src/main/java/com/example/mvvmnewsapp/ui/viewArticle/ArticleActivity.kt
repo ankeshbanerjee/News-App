@@ -23,7 +23,11 @@ class ArticleActivity : AppCompatActivity() {
 
         // open article in webview
         val webView = findViewById<WebView>(R.id.articleWebView)
-        webView.loadUrl(args.article.url)
+        if (args.article.url != null){
+            webView.loadUrl(args.article.url as String)
+        } else {
+            Toast.makeText(this, "url doesn't exist", Toast.LENGTH_SHORT)
+        }
 
         findViewById<FloatingActionButton>(R.id.articleFab).apply {
             setOnClickListener{

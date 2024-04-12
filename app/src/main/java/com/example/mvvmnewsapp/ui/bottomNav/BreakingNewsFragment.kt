@@ -12,6 +12,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mvvmnewsapp.MainActivity
 import com.example.mvvmnewsapp.R
 import com.example.mvvmnewsapp.adapters.NewsAdapter
+import com.example.mvvmnewsapp.utils.PaginationScrollListener
+import com.example.mvvmnewsapp.utils.Constants.Companion.COUNTRY_CODE
+import com.example.mvvmnewsapp.utils.Constants.Companion.QUERY_PAGE_SIZE
 import com.example.mvvmnewsapp.utils.Resource
 
 class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news){
@@ -20,6 +23,8 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news){
     lateinit var progressBar: ProgressBar
     lateinit var recyclerView: RecyclerView
     lateinit var newsAdapter: NewsAdapter
+    var isLoading = false
+    var isLastPage = false
 
     private val tag = "BreakingNewsResponse"
 
@@ -30,14 +35,8 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news){
         recyclerView = view.findViewById(R.id.rvBreakingNews)
         setupRecyclerView()
         newsAdapter.setOnItemClickListener { article ->
-//            val action = BreakingNewsFragmentDirections.actionBreakingNewsFragmentToArticleFragment(article)
-//            view.findNavController().navigate(action)
-            try {
-                val action = BreakingNewsFragmentDirections.actionBreakingNewsFragmentToArticleActivity(article)
-                view.findNavController().navigate(action)
-            }catch (e: Exception){
-                Log.e("Wv", e.message.toString())
-            }
+            val action = BreakingNewsFragmentDirections.actionBreakingNewsFragmentToArticleActivity(article)
+            view.findNavController().navigate(action)
         }
 
         viewModel.breakingNewsLiveData.observe(viewLifecycleOwner, Observer { response ->
@@ -45,7 +44,12 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news){
                 is Resource.Success -> {
                     hideProgressBar()
                     response.data?.let{ res ->
-                        newsAdapter.differ.submitList(res.articles)
+                        newsAdapter.differ.submitList(res.articles.toList())
+                        val totalPages = res.totalResults / QUERY_PAGE_SIZE + 1
+                        isLastPage = viewModel.breakingNewsPage == totalPages
+                        if (isLastPage){
+                            recyclerView.setPadding(0, 0, 0, 0)
+                        }
                     }
                 }
                 is Resource.Loading -> {
@@ -62,10 +66,12 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news){
     }
 
     private fun showProgressBar (){
+        isLoading = true
         progressBar.visibility = ProgressBar.VISIBLE
     }
 
     private fun hideProgressBar (){
+        isLoading = false
         progressBar.visibility = ProgressBar.GONE
     }
 
@@ -74,7 +80,14 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news){
             newsAdapter = NewsAdapter()
             adapter = newsAdapter
             layoutManager = LinearLayoutManager(requireContext())
-
+        }.also {
+            it.addOnScrollListener(object : PaginationScrollListener(it.layoutManager as LinearLayoutManager){
+                override fun loadMore() {
+                    viewModel.getBreakingNews(COUNTRY_CODE)
+                }
+                override fun isLoading(): Boolean = isLoading
+                override fun isLastPage(): Boolean = isLastPage
+            })
         }
     }
 }
