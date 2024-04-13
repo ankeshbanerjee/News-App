@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -88,8 +89,9 @@ class SearchNewsFragment : Fragment(R.layout.fragment_search_news){
                 }
                 is Resource.Error -> {
                     hideProgressBar()
-                    response.message?.let {
-                        Log.e(tag, it)
+                    response.message?.let {msg ->
+                        Log.e(tag, msg)
+                        Toast.makeText(requireContext(), "Error $msg", Toast.LENGTH_SHORT).show()
                     }
                 }
                 is Resource.Loading -> {

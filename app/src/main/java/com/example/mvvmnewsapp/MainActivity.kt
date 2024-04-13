@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(
             this,
-            NewsViewModelFactory(NewsRepository(ArticleDatabase.getInstance(this)))
+            NewsViewModelFactory(application, NewsRepository(ArticleDatabase.getInstance(this)))
         )[NewsViewModel::class.java]
 
 

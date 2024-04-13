@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
@@ -59,6 +60,7 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news){
                     hideProgressBar()
                     response.message?.let { msg ->
                         Log.e(tag, msg)
+                        Toast.makeText(context, "Error $msg", Toast.LENGTH_SHORT).show()
                     }
                 }
             }

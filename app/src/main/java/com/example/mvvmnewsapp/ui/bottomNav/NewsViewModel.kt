@@ -1,5 +1,11 @@
 package com.example.mvvmnewsapp.ui.bottomNav
 
+import android.app.Application
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,7 +19,7 @@ import kotlinx.coroutines.launch
 import retrofit2.Response
 import java.lang.Exception
 
-class NewsViewModel(val newsRepository: NewsRepository): ViewModel() {
+class NewsViewModel(application: Application , val newsRepository: NewsRepository): AndroidViewModel(application) {
     val breakingNewsLiveData = MutableLiveData<Resource<NewsResponse>>()
     var breakingNewsPage = 1
     var breakingNewsResponse : NewsResponse? = null
@@ -26,22 +32,30 @@ class NewsViewModel(val newsRepository: NewsRepository): ViewModel() {
         getBreakingNews(COUNTRY_CODE)
     }
     fun getBreakingNews(countryCode: String) = viewModelScope.launch {
-         breakingNewsLiveData.postValue(Resource.Loading())
-         try {
-             val response = newsRepository.getBreakingNews(countryCode, breakingNewsPage)
-             breakingNewsLiveData.postValue(handleBreakingNewsResponse(response))
-         } catch (e: Exception){
-             breakingNewsLiveData.postValue(Resource.Error(null, e.message.toString()))
+        breakingNewsLiveData.postValue(Resource.Loading())
+        if (hasInternetConnection()){
+             try {
+                 val response = newsRepository.getBreakingNews(countryCode, breakingNewsPage)
+                 breakingNewsLiveData.postValue(handleBreakingNewsResponse(response))
+             } catch (e: Exception){
+                 breakingNewsLiveData.postValue(Resource.Error(null, e.message.toString()))
+             }
+         }else {
+             breakingNewsLiveData.postValue(Resource.Error(null, "No internet connection"))
          }
      }
 
      fun searchNews(searchQuery: String) = viewModelScope.launch {
-         searchNewsLiveData.postValue(Resource.Loading())
-         try {
-             val response = newsRepository.searchNews(searchQuery, searchNewsPage)
-             searchNewsLiveData.postValue(handleSearchNewsResponse(response))
-         } catch (e: Exception){
-             searchNewsLiveData.postValue(Resource.Error(null, e.message.toString()))
+         if (hasInternetConnection()){
+             searchNewsLiveData.postValue(Resource.Loading())
+             try {
+                 val response = newsRepository.searchNews(searchQuery, searchNewsPage)
+                 searchNewsLiveData.postValue(handleSearchNewsResponse(response))
+             } catch (e: Exception){
+                 searchNewsLiveData.postValue(Resource.Error(null, e.message.toString()))
+             }
+         } else{
+             searchNewsLiveData.postValue(Resource.Error(null, "No internet connection"))
          }
      }
 
@@ -84,6 +98,28 @@ class NewsViewModel(val newsRepository: NewsRepository): ViewModel() {
 
     fun upsert (article: Article) = viewModelScope.launch {
         newsRepository.upsert(article)
+    }
+
+    // check internet connection
+    private fun hasInternetConnection (): Boolean{
+        val context = getApplication<Application>().applicationContext
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val network = connectivityManager.activeNetwork ?: return false
+            val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+            return when {
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                else -> false
+            }
+        } else {
+            // if the android version is below M
+            @Suppress("DEPRECATION") val networkInfo =
+                connectivityManager.activeNetworkInfo ?: return false
+            @Suppress("DEPRECATION")
+            return networkInfo.isConnected
+        }
     }
 
 }
