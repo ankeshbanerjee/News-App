@@ -5,21 +5,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mvvmnewsapp.R
 import com.example.mvvmnewsapp.models.Article
-import org.w3c.dom.Text
 
-private val diffUtil = object : DiffUtil.ItemCallback<Article>() {
-    override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean = oldItem.url == newItem.url
-
-    override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean = oldItem == newItem
-}
-class NewsAdapter: PagingDataAdapter<Article, NewsAdapter.ViewHolder>(diffCallback = diffUtil) {
+class SavedNewsAdapter: RecyclerView.Adapter<SavedNewsAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view){
         val ivArticleImage: ImageView
@@ -36,22 +29,22 @@ class NewsAdapter: PagingDataAdapter<Article, NewsAdapter.ViewHolder>(diffCallba
         }
     }
 
-//    private val diffUtil = object : DiffUtil.ItemCallback<Article>() {
-//        override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean = oldItem.url == newItem.url
-//
-//        override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean = oldItem == newItem
-//    }
-//
-//    val differ = AsyncListDiffer(this, diffUtil)
+    private val diffUtil = object : DiffUtil.ItemCallback<Article>() {
+        override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean = oldItem.url == newItem.url
+
+        override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean = oldItem == newItem
+    }
+
+    val differ = AsyncListDiffer(this, diffUtil)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
             LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_article_preview, parent, false))
+                .inflate(R.layout.item_article_preview, parent, false))
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val article = getItem(position)
+        val article = differ.currentList[position]
         holder.apply {
             Glide.with(holder.itemView.context).load(article?.urlToImage).into(ivArticleImage)
             tvSource.text = article?.source?.name
@@ -70,5 +63,5 @@ class NewsAdapter: PagingDataAdapter<Article, NewsAdapter.ViewHolder>(diffCallba
         onItemClickListener = listener
     }
 
-//    override fun getItemCount(): Int = differ.currentList.size
+    override fun getItemCount(): Int = differ.currentList.size
 }
