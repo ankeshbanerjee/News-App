@@ -7,6 +7,7 @@ import android.webkit.WebView
 import android.widget.Toast
 import androidx.navigation.navArgs
 import com.example.mvvmnewsapp.R
+import com.example.mvvmnewsapp.databinding.ActivityArticleBinding
 import com.example.mvvmnewsapp.db.ArticleDatabase
 import com.example.mvvmnewsapp.repository.NewsRepository
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -14,26 +15,27 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 class ArticleActivity : AppCompatActivity() {
 
     private val args: ArticleActivityArgs by navArgs()
+    private lateinit var binding: ActivityArticleBinding
     lateinit var viewModel: ArticleActivityViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_article)
+        binding = ActivityArticleBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         viewModel = ArticleActivityViewModel(NewsRepository(ArticleDatabase.getInstance(this)))
 
-        // open article in webview
-        val webView = findViewById<WebView>(R.id.articleWebView)
+        // open article in web-view
+        val webView = binding.articleWebView
         if (args.article.url != null){
             webView.loadUrl(args.article.url as String)
         } else {
-            Toast.makeText(this, "url doesn't exist", Toast.LENGTH_SHORT)
+            Toast.makeText(this, "url doesn't exist", Toast.LENGTH_SHORT).show()
         }
 
-        findViewById<FloatingActionButton>(R.id.articleFab).apply {
-            setOnClickListener{
-                viewModel.upsert(args.article)
-                Toast.makeText(this@ArticleActivity, "Article saved", Toast.LENGTH_SHORT).show()
-            }
+        binding.articleFab.setOnClickListener{
+            viewModel.upsert(args.article)
+            Toast.makeText(this@ArticleActivity, "Article saved", Toast.LENGTH_SHORT).show()
         }
+
     }
 }

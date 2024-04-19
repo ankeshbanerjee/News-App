@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.mvvmnewsapp.R
+import com.example.mvvmnewsapp.databinding.ItemArticlePreviewBinding
 import com.example.mvvmnewsapp.models.Article
 import org.w3c.dom.Text
 
@@ -21,20 +22,7 @@ private val diffUtil = object : DiffUtil.ItemCallback<Article>() {
 }
 class NewsAdapter: PagingDataAdapter<Article, NewsAdapter.ViewHolder>(diffCallback = diffUtil) {
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view){
-        val ivArticleImage: ImageView
-        val tvSource: TextView
-        val tvTitle: TextView
-        val tvDescription: TextView
-        val tvPublishedAt: TextView
-        init{
-            ivArticleImage = view.findViewById<ImageView>(R.id.ivArticleImage)
-            tvSource = view.findViewById<TextView>(R.id.tvSource)
-            tvTitle = view.findViewById<TextView>(R.id.tvTitle)
-            tvDescription = view.findViewById<TextView>(R.id.tvDescription)
-            tvPublishedAt = view.findViewById<TextView>(R.id.tvPublishedAt)
-        }
-    }
+    class ViewHolder(val binding: ItemArticlePreviewBinding) : RecyclerView.ViewHolder(binding.root)
 
 //    private val diffUtil = object : DiffUtil.ItemCallback<Article>() {
 //        override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean = oldItem.url == newItem.url
@@ -45,19 +33,18 @@ class NewsAdapter: PagingDataAdapter<Article, NewsAdapter.ViewHolder>(diffCallba
 //    val differ = AsyncListDiffer(this, diffUtil)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
-            LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_article_preview, parent, false))
+        val binding =  ItemArticlePreviewBinding.inflate(LayoutInflater.from(parent.context) , parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val article = getItem(position)
         holder.apply {
-            Glide.with(holder.itemView.context).load(article?.urlToImage).into(ivArticleImage)
-            tvSource.text = article?.source?.name
-            tvTitle.text = article?.title
-            tvDescription.text = article?.description
-            tvPublishedAt.text = article?.publishedAt
+            Glide.with(holder.itemView.context).load(article?.urlToImage).into(binding.ivArticleImage)
+            binding.tvSource.text = article?.source?.name
+            binding.tvTitle.text = article?.title
+            binding.tvDescription.text = article?.description
+            binding.tvPublishedAt.text = article?.publishedAt
             itemView.setOnClickListener{
                 onItemClickListener?.let { listener -> listener(article)}
             }

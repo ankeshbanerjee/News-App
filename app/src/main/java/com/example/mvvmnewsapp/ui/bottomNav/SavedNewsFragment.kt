@@ -13,16 +13,17 @@ import com.example.mvvmnewsapp.MainActivity
 import com.example.mvvmnewsapp.R
 import com.example.mvvmnewsapp.adapters.NewsAdapter
 import com.example.mvvmnewsapp.adapters.SavedNewsAdapter
+import com.example.mvvmnewsapp.databinding.FragmentSavedNewsBinding
 import com.google.android.material.snackbar.Snackbar
 
 class SavedNewsFragment : Fragment(R.layout.fragment_saved_news){
+    private lateinit var binding: FragmentSavedNewsBinding
     lateinit var viewModel: NewsViewModel
-    lateinit var recyclerView: RecyclerView
     lateinit var newsAdapter: SavedNewsAdapter
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding = FragmentSavedNewsBinding.bind(view)
         viewModel = (activity as MainActivity).viewModel
-        recyclerView = view.findViewById(R.id.rvSavedNews)
         setupRecyclerView()
         newsAdapter.setOnItemClickListener { article ->
             val action = SavedNewsFragmentDirections.actionSavedNewsFragmentToArticleActivity(article!!)
@@ -53,14 +54,14 @@ class SavedNewsFragment : Fragment(R.layout.fragment_saved_news){
                 }
             }
         }.also {itemTouchHelperCallback ->
-            ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView)
+            ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(binding.rvSavedNews)
         }
 
     }
 
     private fun setupRecyclerView (){
         newsAdapter = SavedNewsAdapter()
-        recyclerView.apply {
+        binding.rvSavedNews.apply {
             adapter = newsAdapter
             layoutManager = LinearLayoutManager(requireContext())
         }

@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mvvmnewsapp.MainActivity
 import com.example.mvvmnewsapp.R
 import com.example.mvvmnewsapp.adapters.NewsAdapter
+import com.example.mvvmnewsapp.databinding.FragmentSavedNewsBinding
+import com.example.mvvmnewsapp.databinding.FragmentSearchNewsBinding
 import com.example.mvvmnewsapp.utils.Constants.Companion.SEARCH_NEWS_TIME_DELAY
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -21,22 +23,16 @@ import kotlinx.coroutines.launch
 
 
 class SearchNewsFragment : Fragment(R.layout.fragment_search_news){
-    lateinit var recyclerView: RecyclerView
-    lateinit var newsAdapter: NewsAdapter
-    lateinit var viewModel: NewsViewModel
-    lateinit var progressBar: ProgressBar
-    lateinit var centeredProgressBar: ProgressBar
-    lateinit var editText: EditText
+    private lateinit var binding: FragmentSearchNewsBinding
+    private lateinit var newsAdapter: NewsAdapter
+    private lateinit var viewModel: NewsViewModel
 
     private val tag: String = "SearchNewsResponse"
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding = FragmentSearchNewsBinding.bind(view)
         viewModel = (activity as MainActivity).viewModel
-        progressBar = view.findViewById(R.id.paginationProgressBar)
-        centeredProgressBar = view.findViewById(R.id.centeredProgressBar)
-        recyclerView = view.findViewById(R.id.rvSearchNews)
-        editText = view.findViewById(R.id.etSearch)
         setupRecyclerView()
 
         newsAdapter.setOnItemClickListener { article ->
@@ -58,7 +54,7 @@ class SearchNewsFragment : Fragment(R.layout.fragment_search_news){
         }
 
         var job: Job? = null
-        editText.addTextChangedListener{editable ->
+        binding.etSearch.addTextChangedListener{editable ->
             job?.cancel()
             job = lifecycleScope.launch {
                 delay(SEARCH_NEWS_TIME_DELAY)
@@ -74,23 +70,23 @@ class SearchNewsFragment : Fragment(R.layout.fragment_search_news){
     }
 
     private fun hideCenteredProgressBar() {
-        centeredProgressBar.visibility = ProgressBar.GONE
+        binding.centeredProgressBar.visibility = ProgressBar.GONE
     }
 
     private fun showCenteredProgressBar() {
-        centeredProgressBar.visibility = ProgressBar.VISIBLE
+        binding.centeredProgressBar.visibility = ProgressBar.VISIBLE
     }
 
     private fun showProgressBar() {
-        progressBar.visibility = ProgressBar.VISIBLE
+        binding.paginationProgressBar.visibility = ProgressBar.VISIBLE
     }
     private fun hideProgressBar() {
-        progressBar.visibility = ProgressBar.GONE
+        binding.paginationProgressBar.visibility = ProgressBar.GONE
     }
 
     private fun setupRecyclerView (){
         newsAdapter = NewsAdapter()
-        recyclerView.apply {
+        binding.rvSearchNews.apply {
             adapter = newsAdapter
             layoutManager = LinearLayoutManager(requireContext())
         }

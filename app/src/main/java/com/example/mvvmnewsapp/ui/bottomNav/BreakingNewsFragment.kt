@@ -1,7 +1,9 @@
 package com.example.mvvmnewsapp.ui.bottomNav
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
@@ -11,23 +13,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mvvmnewsapp.MainActivity
 import com.example.mvvmnewsapp.R
 import com.example.mvvmnewsapp.adapters.NewsAdapter
+import com.example.mvvmnewsapp.databinding.FragmentBreakingNewsBinding
 
 class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news){
 
-    lateinit var viewModel: NewsViewModel
-    lateinit var progressBar: ProgressBar
-    lateinit var centeredProgressBar: ProgressBar
-    lateinit var recyclerView: RecyclerView
-    lateinit var newsAdapter: NewsAdapter
+    private lateinit var binding: FragmentBreakingNewsBinding
+    private lateinit var viewModel: NewsViewModel
+    private lateinit var newsAdapter: NewsAdapter
 
     private val tag = "BreakingNewsResponse"
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding = FragmentBreakingNewsBinding.bind(view)
         viewModel = (activity as MainActivity).viewModel
-        progressBar = view.findViewById(R.id.paginationProgressBar)
-        centeredProgressBar = view.findViewById(R.id.centeredProgressBar)
-        recyclerView = view.findViewById(R.id.rvBreakingNews)
         setupRecyclerView()
         newsAdapter.setOnItemClickListener { article ->
             val action = BreakingNewsFragmentDirections.actionBreakingNewsFragmentToArticleActivity(article!!)
@@ -52,23 +51,23 @@ class BreakingNewsFragment : Fragment(R.layout.fragment_breaking_news){
     }
 
     private fun showProgressBar (){
-        progressBar.visibility = ProgressBar.VISIBLE
+        binding.paginationProgressBar.visibility = ProgressBar.VISIBLE
     }
 
     private fun hideProgressBar (){
-        progressBar.visibility = ProgressBar.GONE
+        binding.paginationProgressBar.visibility = ProgressBar.GONE
     }
 
     private fun showCenteredProgressBar (){
-        centeredProgressBar.visibility = ProgressBar.VISIBLE
+        binding.centeredProgressBar.visibility = ProgressBar.VISIBLE
     }
 
     private fun hideCenteredProgressBar (){
-        centeredProgressBar.visibility = ProgressBar.GONE
+        binding.centeredProgressBar.visibility = ProgressBar.GONE
     }
 
     private fun setupRecyclerView(){
-        recyclerView.apply {
+        binding.rvBreakingNews.apply {
             newsAdapter = NewsAdapter()
             adapter = newsAdapter
             layoutManager = LinearLayoutManager(requireContext())

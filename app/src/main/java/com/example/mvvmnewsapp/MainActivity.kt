@@ -6,6 +6,8 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.example.mvvmnewsapp.databinding.ActivityArticleBinding
+import com.example.mvvmnewsapp.databinding.ActivityMainBinding
 import com.example.mvvmnewsapp.db.ArticleDatabase
 import com.example.mvvmnewsapp.repository.NewsRepository
 import com.example.mvvmnewsapp.ui.bottomNav.NewsViewModel
@@ -14,13 +16,15 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityMainBinding
     lateinit var viewModel: NewsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        val bottomNav = binding.bottomNavigation
 
         viewModel = ViewModelProvider(
             this,
