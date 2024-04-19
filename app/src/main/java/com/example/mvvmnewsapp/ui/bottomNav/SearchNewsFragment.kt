@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mvvmnewsapp.MainActivity
@@ -30,9 +31,8 @@ class SearchNewsFragment : Fragment(R.layout.fragment_search_news){
     lateinit var newsAdapter: NewsAdapter
     lateinit var viewModel: NewsViewModel
     lateinit var progressBar: ProgressBar
+    lateinit var centeredProgressBar: ProgressBar
     lateinit var editText: EditText
-    var isLoading: Boolean = false
-    var isLastPage: Boolean = false
 
     private val tag: String = "SearchNewsResponse"
 
@@ -40,23 +40,27 @@ class SearchNewsFragment : Fragment(R.layout.fragment_search_news){
         super.onViewCreated(view, savedInstanceState)
         viewModel = (activity as MainActivity).viewModel
         progressBar = view.findViewById(R.id.paginationProgressBar)
+        centeredProgressBar = view.findViewById(R.id.centeredProgressBar)
         recyclerView = view.findViewById(R.id.rvSearchNews)
         editText = view.findViewById(R.id.etSearch)
         setupRecyclerView()
 
-        recyclerView.addOnScrollListener(object : PaginationScrollListener(recyclerView.layoutManager as LinearLayoutManager){
-            override fun loadMore() {
-                viewModel.searchNews(editText.text.toString())
-            }
-
-            override fun isLoading(): Boolean = isLoading
-
-            override fun isLastPage(): Boolean = isLastPage
-        })
-
         newsAdapter.setOnItemClickListener { article ->
-            val action = SearchNewsFragmentDirections.actionSearchNewsFragmentToArticleActivity(article)
+            val action = SearchNewsFragmentDirections.actionSearchNewsFragmentToArticleActivity(article!!)
             view.findNavController().navigate(action)
+        }
+
+        newsAdapter.addLoadStateListener { loadState ->
+            if (loadState.refresh is LoadState.Loading){
+                showCenteredProgressBar()
+                hideProgressBar()
+            } else if (loadState.append is LoadState.Loading) {
+                hideCenteredProgressBar()
+                showProgressBar()
+            } else if (loadState.append is LoadState.NotLoading || loadState.append is LoadState.Error || loadState.refresh is LoadState.Error || loadState.refresh is LoadState.NotLoading) {
+                hideProgressBar()
+                hideCenteredProgressBar()
+            }
         }
 
         var job: Job? = null
@@ -66,47 +70,27 @@ class SearchNewsFragment : Fragment(R.layout.fragment_search_news){
                 delay(SEARCH_NEWS_TIME_DELAY)
                 if (editable.toString().isNotEmpty()){
                     editable?.let {
-                        viewModel.searchNewsPage = 1
-                        viewModel.searchNewsResponse = null
-                        viewModel.searchNews(it.toString())
+                        viewModel.searchNews(it.toString()).observe(viewLifecycleOwner) {
+                            newsAdapter.submitData(viewLifecycleOwner.lifecycle, it)
+                        }
                     }
                 }
             }
         }
+    }
 
-        viewModel.searchNewsLiveData.observe(viewLifecycleOwner, Observer { response ->
-            when(response){
-                is Resource.Success -> {
-                    hideProgressBar()
-                    response.data?.let { res ->
-                        newsAdapter.differ.submitList(res.articles.toList())
-                        val totalPages = res.totalResults / QUERY_PAGE_SIZE + 1
-                        isLastPage = totalPages == viewModel.searchNewsPage
-                        if (isLastPage){
-                            recyclerView.setPadding(0, 0,0, 0)
-                        }
-                    }
-                }
-                is Resource.Error -> {
-                    hideProgressBar()
-                    response.message?.let {msg ->
-                        Log.e(tag, msg)
-                        Toast.makeText(requireContext(), "Error $msg", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                is Resource.Loading -> {
-                    showProgressBar()
-                }
-            }
-        })
+    private fun hideCenteredProgressBar() {
+        centeredProgressBar.visibility = ProgressBar.GONE
+    }
+
+    private fun showCenteredProgressBar() {
+        centeredProgressBar.visibility = ProgressBar.VISIBLE
     }
 
     private fun showProgressBar() {
-        isLoading = true
         progressBar.visibility = ProgressBar.VISIBLE
     }
     private fun hideProgressBar() {
-        isLoading = false
         progressBar.visibility = ProgressBar.GONE
     }
 
