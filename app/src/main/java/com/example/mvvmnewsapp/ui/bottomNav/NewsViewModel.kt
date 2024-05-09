@@ -17,9 +17,12 @@ import com.example.mvvmnewsapp.models.Article
 import com.example.mvvmnewsapp.repository.NewsRepository
 import com.example.mvvmnewsapp.paging.SearchNewsPagingDataSource
 import com.example.mvvmnewsapp.utils.Constants.Companion.QUERY_PAGE_SIZE
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class NewsViewModel(application: Application, private val newsRepository: NewsRepository): AndroidViewModel(application) {
+@HiltViewModel
+class NewsViewModel @Inject constructor(application: Application, private val newsRepository: NewsRepository): AndroidViewModel(application) {
 
     val breakingNewsLiveData: LiveData<PagingData<Article>> =
         newsRepository.getBreakingNews()
@@ -64,3 +67,4 @@ class NewsViewModel(application: Application, private val newsRepository: NewsRe
     }
 
 }
+
