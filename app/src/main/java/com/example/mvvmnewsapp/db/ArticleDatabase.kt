@@ -17,23 +17,13 @@ abstract class ArticleDatabase : RoomDatabase() {
 
         private const val Database_NAME = "articles.db"
 
-        @Volatile
-        private var INSTANCE: ArticleDatabase? = null
+        fun getInstance(context: Context): ArticleDatabase =
+            Room.databaseBuilder(
+                context.applicationContext,
+                ArticleDatabase::class.java,
+                Database_NAME
+            ).build()
 
-        fun getInstance(context: Context): ArticleDatabase {
-            synchronized(this) {
-                var instance = INSTANCE
-                if (instance == null) {
-                    instance = Room.databaseBuilder(
-                        context.applicationContext,
-                        ArticleDatabase::class.java,
-                        Database_NAME
-                    ).build()
-                    INSTANCE = instance
-                }
-                return instance
-            }
-        }
     }
 
 }
